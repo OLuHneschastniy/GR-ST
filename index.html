@@ -3,23 +3,44 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>📱 Генератор Рапортички</title>
+<title>📱 Генератор Рапортички (Auto Dark Mode)</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 
 <style>
+/* === ЗМІННІ КОЛЬОРІВ (ТЕМИ) === */
 :root {
+    /* Світла тема (за замовчуванням) */
     --primary: #2563eb;
-    --primary-dark: #1e40af;
+    --primary-hover: #1e40af;
     --bg: #f3f4f6;
     --card-bg: #ffffff;
     --text: #1f2937;
+    --text-muted: #6b7280;
     --border: #e5e7eb;
-    --success: #10b981;
+    --input-bg: #ffffff;
+    --pair-bg: #f9fafb;
+    --details-bg: #f0f9ff;
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
-* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+/* Темна тема (клас .dark-mode) */
+body.dark-mode {
+    --primary: #3b82f6; /* Трохи світліший синій для контрасту */
+    --primary-hover: #60a5fa;
+    --bg: #111827;       /* Майже чорний фон */
+    --card-bg: #1f2937;  /* Темно-сірі картки */
+    --text: #f3f4f6;     /* Світлий текст */
+    --text-muted: #9ca3af;
+    --border: #374151;   /* Темні рамки */
+    --input-bg: #374151; /* Темні поля вводу */
+    --pair-bg: #111827;
+    --details-bg: #1e3a8a; /* Темно-синій для деталей */
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; transition: background-color 0.3s, color 0.3s, border-color 0.3s; }
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -27,20 +48,36 @@ body {
     color: var(--text);
     margin: 0;
     padding: 15px;
-    padding-bottom: 80px; /* Місце для кнопки знизу */
+    padding-bottom: 90px;
 }
 
-h1 {
-    font-size: 1.5rem;
-    text-align: center;
+/* Header & Theme Toggle */
+.header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 20px;
-    color: var(--primary-dark);
+}
+h1 {
+    font-size: 1.4rem;
+    margin: 0;
+    color: var(--primary);
+}
+.theme-btn {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    box-shadow: var(--shadow);
 }
 
 h2 {
     font-size: 1.1rem;
     margin: 0 0 15px 0;
-    color: #4b5563;
+    color: var(--text-muted);
     border-bottom: 1px solid var(--border);
     padding-bottom: 10px;
 }
@@ -51,16 +88,18 @@ h2 {
     border-radius: 16px;
     padding: 20px;
     margin-bottom: 15px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
 }
 
 /* --- ВИБІР СТОРОНИ --- */
 .side-toggle {
     display: flex;
-    background: #e0e7ff;
+    background: var(--pair-bg);
     border-radius: 12px;
     padding: 4px;
     margin-bottom: 15px;
+    border: 1px solid var(--border);
 }
 
 .side-toggle label {
@@ -70,8 +109,7 @@ h2 {
     border-radius: 10px;
     cursor: pointer;
     font-weight: 600;
-    transition: 0.2s;
-    color: #4b5563;
+    color: var(--text-muted);
 }
 
 .side-toggle input { display: none; }
@@ -79,7 +117,7 @@ h2 {
 .side-toggle input:checked + label {
     background: var(--primary);
     color: white;
-    box-shadow: 0 2px 4px rgba(37, 99, 235, 0.3);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
 /* --- ВВОД ДАТИ --- */
@@ -95,19 +133,20 @@ input, select {
     padding: 12px;
     border: 1px solid var(--border);
     border-radius: 8px;
-    font-size: 16px; /* Щоб iOS не зумив при кліку */
-    background: #fff;
+    font-size: 16px;
+    background: var(--input-bg);
+    color: var(--text);
     appearance: none;
 }
 input:focus, select:focus {
     border-color: var(--primary);
     outline: none;
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
 }
 
 /* --- РОЗКЛАД --- */
 .pair-card {
-    background: #f9fafb;
+    background: var(--pair-bg);
     border: 1px solid var(--border);
     border-radius: 10px;
     padding: 12px;
@@ -157,7 +196,7 @@ input:focus, select:focus {
     position: absolute;
     cursor: pointer;
     top: 0; left: 0; right: 0; bottom: 0;
-    background-color: #ccc;
+    background-color: var(--border); /* Сірий у вимкненому стані */
     transition: .4s;
     border-radius: 34px;
 }
@@ -179,9 +218,10 @@ input:checked + .slider:before { transform: translateX(22px); }
 .student-details {
     display: none;
     margin-top: 10px;
-    background: #f0f9ff;
+    background: var(--details-bg);
     padding: 15px;
     border-radius: 10px;
+    border: 1px solid var(--border);
     animation: slideDown 0.3s ease-out;
 }
 @keyframes slideDown {
@@ -199,22 +239,19 @@ input:checked + .slider:before { transform: translateX(22px); }
     position: relative;
     width: 40px;
     height: 40px;
-    background: white;
+    background: var(--card-bg);
     border: 2px solid var(--border);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: bold;
-    color: #6b7280;
+    color: var(--text-muted);
     cursor: pointer;
     transition: 0.2s;
 }
-.pair-check-input {
-    position: absolute;
-    opacity: 0;
-    cursor: pointer;
-}
+.pair-check-input { position: absolute; opacity: 0; }
+
 .pair-check-input:checked + .pair-check-label {
     background: var(--primary);
     border-color: var(--primary);
@@ -239,35 +276,21 @@ input:checked + .slider:before { transform: translateX(22px); }
     font-size: 1.1rem;
     font-weight: bold;
     border-radius: 12px;
-    box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.4);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
     cursor: pointer;
     transition: 0.2s;
 }
-.btn-generate:active {
-    transform: scale(0.98);
-    background: var(--primary-dark);
-}
+.btn-generate:active { transform: scale(0.98); background: var(--primary-hover); }
 
 /* Input file styling */
-.file-upload {
-    position: relative;
-    display: inline-block;
-    width: 100%;
-}
+.file-upload { position: relative; width: 100%; }
 .file-upload input[type="file"] {
-    position: absolute;
-    left: 0;
-    top: 0;
-    opacity: 0;
-    width: 100%;
-    height: 100%;
-    cursor: pointer;
+    position: absolute; left: 0; top: 0; opacity: 0;
+    width: 100%; height: 100%; cursor: pointer;
 }
 .file-btn {
-    display: block;
-    width: 100%;
-    padding: 12px;
-    background: white;
+    display: block; width: 100%; padding: 12px;
+    background: var(--card-bg);
     border: 2px dashed var(--primary);
     color: var(--primary);
     text-align: center;
@@ -279,7 +302,10 @@ input:checked + .slider:before { transform: translateX(22px); }
 
 <body>
 
-<h1>📄 Рапортичка</h1>
+<div class="header-row">
+    <h1>📄 Рапортичка</h1>
+    <button class="theme-btn" id="themeToggle" onclick="toggleThemeManual()">☀️</button>
+</div>
 
 <div class="card" style="padding: 10px;">
     <div class="side-toggle">
@@ -304,15 +330,15 @@ input:checked + .slider:before { transform: translateX(22px); }
     <h2>2. Дата та Група</h2>
     <div class="date-grid">
         <div>
-            <label style="font-size:0.8rem; color:#666">День</label>
+            <label style="font-size:0.8rem; color:var(--text-muted)">День</label>
             <input type="number" id="dayInput">
         </div>
         <div>
-             <label style="font-size:0.8rem; color:#666">Рік</label>
+             <label style="font-size:0.8rem; color:var(--text-muted)">Рік</label>
             <input type="number" id="yearInput">
         </div>
         <div class="full-width">
-             <label style="font-size:0.8rem; color:#666">Місяць</label>
+             <label style="font-size:0.8rem; color:var(--text-muted)">Місяць</label>
             <select id="monthInput">
                 <option value="0">Січня</option>
                 <option value="1">Лютого</option>
@@ -329,7 +355,7 @@ input:checked + .slider:before { transform: translateX(22px); }
             </select>
         </div>
         <div class="full-width">
-             <label style="font-size:0.8rem; color:#666">Група</label>
+             <label style="font-size:0.8rem; color:var(--text-muted)">Група</label>
             <input type="text" id="groupInput" value="85">
         </div>
     </div>
@@ -350,13 +376,39 @@ input:checked + .slider:before { transform: translateX(22px); }
 </div>
 
 <script>
-// Синхронізація гарного перемикача з логікою
+// ===== ТЕМА (AUTO DARK MODE) =====
+const themeBtn = document.getElementById('themeToggle');
+
+function checkAutoTheme() {
+    const hour = new Date().getHours();
+    // Темна тема: з 16:00 до 06:59
+    const isDarkTime = (hour >= 16 || hour < 7);
+    
+    if (isDarkTime) {
+        document.body.classList.add('dark-mode');
+        themeBtn.innerText = "🌙";
+    } else {
+        document.body.classList.remove('dark-mode');
+        themeBtn.innerText = "☀️";
+    }
+}
+
+function toggleThemeManual() {
+    document.body.classList.toggle('dark-mode');
+    const isDark = document.body.classList.contains('dark-mode');
+    themeBtn.innerText = isDark ? "🌙" : "☀️";
+}
+
+// Запускаємо перевірку часу при завантаженні
+checkAutoTheme();
+
+// ===== ЛОГІКА ІНТЕРФЕЙСУ =====
+
 function updateSideVal() {
     const isLeft = document.getElementById('sideLeft').checked;
     document.getElementById('sideSelect').value = isLeft ? 'left' : 'right';
 }
 
-// ===== АВТОМАТИЧНА ДАТА =====
 document.addEventListener('DOMContentLoaded', () => {
     const today = new Date();
     document.getElementById('dayInput').value = today.getDate();
@@ -400,7 +452,7 @@ const monthNames = [
     "Липня", "Серпня", "Вересня", "Жовтня", "Листопада", "Грудня"
 ];
 
-// ===== ГЕНЕРАЦІЯ РОЗКЛАДУ (Mobile Layout) =====
+// ===== ГЕНЕРАЦІЯ РОЗКЛАДУ =====
 const schedule = document.getElementById("schedule");
 
 for (let i = 0; i <= 4; i++) {
@@ -432,7 +484,6 @@ function autoTeacher(i) {
   const isSelected = (subjValue !== "");
 
   students.forEach((_, studentIndex) => {
-    // Шукаємо наші нові "пузирчасті" чекбокси
     const checkboxes = document.querySelectorAll(`.p${studentIndex}`);
     checkboxes.forEach(cb => {
         if (cb.value == i) {
@@ -442,7 +493,7 @@ function autoTeacher(i) {
   });
 }
 
-// ===== ГЕНЕРАЦІЯ СТУДЕНТІВ (Mobile Toggle) =====
+// ===== ГЕНЕРАЦІЯ СТУДЕНТІВ =====
 const studentsDiv = document.getElementById("students");
 
 students.forEach((s, i) => {
@@ -457,12 +508,12 @@ students.forEach((s, i) => {
       </div>
       
       <div class="student-details" id="det_${i}">
-        <label style="font-size:0.8rem; color:#666">Причина:</label>
+        <label style="font-size:0.8rem; color:var(--text-muted)">Причина:</label>
         <select id="reason_${i}" style="margin-top:5px; margin-bottom:15px;">
           ${reasons.map(r => `<option>${r}</option>`).join("")}
         </select>
 
-        <label style="font-size:0.8rem; color:#666">Пропущені пари:</label>
+        <label style="font-size:0.8rem; color:var(--text-muted)">Пропущені пари:</label>
         <div class="pair-bubbles">
           ${[0,1,2,3,4].map(pairNum => `
             <div>
@@ -486,7 +537,7 @@ function toggle(i) {
   }
 }
 
-// ===== EXCEL ЛОГІКА (БЕЗ ЗМІН) =====
+// ===== EXCEL ЛОГІКА =====
 
 function styleCell(cell, bold, size=11, italic=false) {
   cell.font = { name: "Times New Roman", size: size, bold: bold, italic: italic };
@@ -499,7 +550,7 @@ async function generateExcel() {
 
   const side = document.getElementById("sideSelect").value;
   
-  // Колонки (зі зміщенням на 1 клітинку вперед для правої частини)
+  // Колонки (ЛІВА = Default, ПРАВА = Зміщена на 1)
   const cols = {
       header:   side === 'left' ? "A2" : "K2",
       subject:  side === 'left' ? "B"  : "L",

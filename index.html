@@ -3,342 +3,374 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>📱 Генератор Рапортички (Auto Dark Mode)</title>
+<title>Raport Pixel Style</title>
 
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 
 <style>
-/* === ЗМІННІ КОЛЬОРІВ (ТЕМИ) === */
+/* === КОЛЬОРОВА ПАЛІТРА === */
 :root {
-    /* Світла тема (за замовчуванням) */
-    --primary: #2563eb;
-    --primary-hover: #1e40af;
-    --bg: #f3f4f6;
-    --card-bg: #ffffff;
-    --text: #1f2937;
-    --text-muted: #6b7280;
-    --border: #e5e7eb;
-    --input-bg: #ffffff;
-    --pair-bg: #f9fafb;
-    --details-bg: #f0f9ff;
-    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    /* СЕРЕДНЯ ТЕМА (Soft Light) */
+    --md-sys-color-primary: #0061a4;
+    --md-sys-color-on-primary: #ffffff;
+    --md-sys-color-primary-container: #d1e4ff;
+    --md-sys-color-on-primary-container: #001d36;
+    
+    /* Фон тепер не білий, а приємний сірий (Eye Comfort) */
+    --md-sys-color-background: #e3e6ea; 
+    
+    /* Картки залишаються білими для контрасту */
+    --md-sys-color-surface: #ffffff; 
+    
+    --md-sys-color-surface-variant: #f1f3f4; /* Фон полів вводу */
+    --md-sys-color-on-surface: #1a1c1e;
+    --md-sys-color-on-surface-variant: #44474f;
+    --md-sys-color-outline: #74777f;
+    --md-sys-color-border: #c4c7c5; /* Колір рамки для Input */
+    
+    --md-sys-motion-easing: cubic-bezier(0.2, 0.0, 0, 1.0);
+    --md-sys-shape-corner-large: 24px;
+    --md-sys-shape-corner-medium: 12px;
+    --md-sys-shape-corner-full: 999px;
+    
+    --shadow-soft: 0 2px 8px rgba(0,0,0,0.05);
 }
 
-/* Темна тема (клас .dark-mode) */
+/* ТЕМНА ТЕМА */
 body.dark-mode {
-    --primary: #3b82f6; /* Трохи світліший синій для контрасту */
-    --primary-hover: #60a5fa;
-    --bg: #111827;       /* Майже чорний фон */
-    --card-bg: #1f2937;  /* Темно-сірі картки */
-    --text: #f3f4f6;     /* Світлий текст */
-    --text-muted: #9ca3af;
-    --border: #374151;   /* Темні рамки */
-    --input-bg: #374151; /* Темні поля вводу */
-    --pair-bg: #111827;
-    --details-bg: #1e3a8a; /* Темно-синій для деталей */
-    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+    --md-sys-color-primary: #9ecaff;
+    --md-sys-color-on-primary: #003258;
+    --md-sys-color-primary-container: #00497d;
+    --md-sys-color-on-primary-container: #d1e4ff;
+    
+    --md-sys-color-background: #121212; /* Глибокий чорний */
+    --md-sys-color-surface: #1e1e1e;   /* Темно-сірі картки */
+    
+    --md-sys-color-surface-variant: #2c2c2c;
+    --md-sys-color-on-surface: #e2e2e6;
+    --md-sys-color-on-surface-variant: #c4c6d0;
+    --md-sys-color-outline: #8e9099;
+    --md-sys-color-border: #44474f;
 }
 
-* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; transition: background-color 0.3s, color 0.3s, border-color 0.3s; }
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    background: var(--bg);
-    color: var(--text);
+    font-family: 'Roboto', sans-serif;
+    background-color: var(--md-sys-color-background);
+    color: var(--md-sys-color-on-surface);
     margin: 0;
-    padding: 15px;
-    padding-bottom: 90px;
+    padding: 20px;
+    padding-bottom: 100px;
+    transition: background-color 0.4s, color 0.4s;
+    overflow-x: hidden;
 }
 
-/* Header & Theme Toggle */
-.header-row {
+/* === АНІМАЦІЇ === */
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.animate-enter { animation: fadeInUp 0.5s var(--md-sys-motion-easing) backwards; }
+
+/* === ШАПКА === */
+.header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
 }
-h1 {
-    font-size: 1.4rem;
-    margin: 0;
-    color: var(--primary);
-}
-.theme-btn {
-    background: var(--card-bg);
-    border: 1px solid var(--border);
-    color: var(--text);
-    padding: 8px 12px;
-    border-radius: 8px;
-    font-size: 1.2rem;
+h1 { font-size: 22px; margin: 0; font-weight: 500; }
+
+.icon-btn {
+    background: var(--md-sys-color-surface);
+    color: var(--md-sys-color-on-surface);
+    border: none;
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    font-size: 20px;
     cursor: pointer;
-    box-shadow: var(--shadow);
+    box-shadow: var(--shadow-soft);
+    display: flex; align-items: center; justify-content: center;
+}
+
+/* === КАРТКИ === */
+.card {
+    background: var(--md-sys-color-surface);
+    border-radius: var(--md-sys-shape-corner-large);
+    padding: 20px;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow-soft); /* М'яка тінь замість бордера */
 }
 
 h2 {
-    font-size: 1.1rem;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 700;
+    color: var(--md-sys-color-primary);
     margin: 0 0 15px 0;
-    color: var(--text-muted);
-    border-bottom: 1px solid var(--border);
-    padding-bottom: 10px;
+    opacity: 0.9;
 }
 
-/* --- КАРТКИ --- */
-.card {
-    background: var(--card-bg);
-    border-radius: 16px;
-    padding: 20px;
-    margin-bottom: 15px;
-    box-shadow: var(--shadow);
-    border: 1px solid var(--border);
+/* === ПРЯМОКУТНІ INPUTS (Класичний стиль) === */
+.input-group { margin-bottom: 12px; }
+label {
+    display: block;
+    font-size: 13px;
+    color: var(--md-sys-color-on-surface-variant);
+    margin-bottom: 6px;
+    margin-left: 2px;
+    font-weight: 500;
 }
-
-/* --- ВИБІР СТОРОНИ --- */
-.side-toggle {
-    display: flex;
-    background: var(--pair-bg);
-    border-radius: 12px;
-    padding: 4px;
-    margin-bottom: 15px;
-    border: 1px solid var(--border);
-}
-
-.side-toggle label {
-    flex: 1;
-    text-align: center;
-    padding: 10px;
-    border-radius: 10px;
-    cursor: pointer;
-    font-weight: 600;
-    color: var(--text-muted);
-}
-
-.side-toggle input { display: none; }
-
-.side-toggle input:checked + label {
-    background: var(--primary);
-    color: white;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-}
-
-/* --- ВВОД ДАТИ --- */
-.date-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-}
-.full-width { grid-column: span 2; }
-
-input, select {
+input, select, .file-btn {
     width: 100%;
-    padding: 12px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
+    padding: 12px 14px; /* Компактніші відступи */
+    background: var(--md-sys-color-surface); /* Фон як у картки або світліший */
+    color: var(--md-sys-color-on-surface);
+    
+    /* ПОВНА РАМКА (Box Style) */
+    border: 1px solid var(--md-sys-color-border);
+    border-radius: 10px; /* Акуратне заокруглення */
+    
     font-size: 16px;
-    background: var(--input-bg);
-    color: var(--text);
+    font-family: inherit;
+    transition: 0.2s;
     appearance: none;
 }
+
+/* Активний стан (Focus) */
 input:focus, select:focus {
-    border-color: var(--primary);
     outline: none;
-    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+    border-color: var(--md-sys-color-primary);
+    box-shadow: 0 0 0 3px rgba(0, 97, 164, 0.15); /* Легке світіння */
 }
 
-/* --- РОЗКЛАД --- */
-.pair-card {
-    background: var(--pair-bg);
-    border: 1px solid var(--border);
+/* Файл інпут */
+.file-upload input { display: none; }
+.file-btn { 
+    text-align: center; 
+    cursor: pointer; 
+    border-style: dashed; 
+    border-width: 2px;
+    background: var(--md-sys-color-surface-variant);
+}
+
+.date-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.full { grid-column: span 2; }
+
+/* === ВИПРАВЛЕНИЙ ПЕРЕМИКАЧ (Toggle) === */
+.switch-container {
+    display: flex;
+    background: var(--md-sys-color-surface-variant); /* Сіра підкладка */
+    border-radius: 30px;
+    padding: 4px; /* Відступ всередині капсули */
+    position: relative;
+    height: 50px;
+    margin-bottom: 10px;
+    border: 1px solid var(--md-sys-color-border); /* Легка обводка */
+}
+
+.switch-option {
+    flex: 1;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    cursor: pointer;
+    transition: color 0.3s;
+    color: var(--md-sys-color-on-surface-variant);
+    font-size: 14px;
+    text-align: center;
+}
+
+/* Рухома частина (Бігунок) */
+.switch-bg {
+    position: absolute;
+    /* ВИРАХОВУЄМО ШИРИНУ: 50% контейнера мінус відступ 4px */
+    width: calc(50% - 4px); 
+    height: calc(100% - 8px); /* Висота мінус відступи зверху/знизу (4+4) */
+    top: 4px;
+    left: 4px; /* Стартова позиція зліва */
+    background: var(--md-sys-color-background); /* Колір бігунка (контрастний) */
+    border-radius: 26px;
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+}
+
+/* Логіка руху */
+/* Якщо вибрано Left (перший input), bg стоїть на місці (transform: none або 0) */
+/* Якщо вибрано Right, зсуваємо на 100% власної ширини + маленький зазор */
+input[value="right"]:checked ~ .switch-bg { 
+    transform: translateX(100%); 
+    /* Можна додати translateX(calc(100% + щось)), якщо треба, але при width calc(50%-4px) 100% має бути ідеально */
+}
+
+/* Зміна кольору тексту активного елемента */
+input[value="right"]:checked ~ label[for="sideRight"] { color: var(--md-sys-color-primary); }
+input[value="left"]:checked ~ label[for="sideLeft"] { color: var(--md-sys-color-primary); }
+
+.hidden-radio { display: none; }
+
+
+/* === СПИСКИ ПАР (Прямокутні блоки) === */
+.pair-item {
+    background: var(--md-sys-color-surface-variant);
     border-radius: 10px;
     padding: 12px;
     margin-bottom: 10px;
+    border: 1px solid transparent;
 }
-.pair-header {
-    font-weight: bold;
-    font-size: 0.9rem;
-    color: var(--primary);
-    margin-bottom: 5px;
-    display: block;
+.pair-item-header {
+    font-weight: 700;
+    color: var(--md-sys-color-primary);
+    margin-bottom: 8px;
+    font-size: 14px;
 }
-.pair-inputs {
+.pair-flex {
     display: flex;
     flex-direction: column;
     gap: 8px;
 }
 
-/* --- СТУДЕНТИ --- */
-.student-row {
-    border-bottom: 1px solid var(--border);
-    padding: 10px 0;
-}
-.student-row:last-child { border-bottom: none; }
-
-.student-header {
+/* === СТУДЕНТИ === */
+.student-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 5px 0;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--md-sys-color-border);
 }
+.student-item:last-child { border-bottom: none; }
 
-.student-name {
-    font-size: 1rem;
-    font-weight: 500;
-}
-
-/* Гарний перемикач (Toggle) */
-.switch {
-    position: relative;
+/* Тумблер біля студента */
+.m3-switch {
+    position: relative; width: 48px; height: 28px;
     display: inline-block;
-    width: 50px;
-    height: 28px;
 }
-.switch input { opacity: 0; width: 0; height: 0; }
-.slider {
-    position: absolute;
-    cursor: pointer;
+.m3-switch input { opacity: 0; width: 0; height: 0; }
+.m3-slider {
+    position: absolute; cursor: pointer;
     top: 0; left: 0; right: 0; bottom: 0;
-    background-color: var(--border); /* Сірий у вимкненому стані */
-    transition: .4s;
+    background-color: #e0e0e0; /* Сірий вимкнений */
     border-radius: 34px;
+    transition: .3s;
 }
-.slider:before {
-    position: absolute;
-    content: "";
-    height: 20px;
-    width: 20px;
-    left: 4px;
-    bottom: 4px;
+.m3-slider:before {
+    position: absolute; content: "";
+    height: 20px; width: 20px;
+    left: 4px; bottom: 4px;
     background-color: white;
-    transition: .4s;
-    border-radius: 50%;
+    transition: .3s; border-radius: 50%;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
 }
-input:checked + .slider { background-color: var(--primary); }
-input:checked + .slider:before { transform: translateX(22px); }
+input:checked + .m3-slider { background-color: var(--md-sys-color-primary); }
+input:checked + .m3-slider:before { transform: translateX(20px); }
 
 /* Деталі студента */
 .student-details {
-    display: none;
-    margin-top: 10px;
-    background: var(--details-bg);
-    padding: 15px;
-    border-radius: 10px;
-    border: 1px solid var(--border);
-    animation: slideDown 0.3s ease-out;
+    display: grid; grid-template-rows: 0fr;
+    transition: grid-template-rows 0.3s ease-out;
+    background: var(--md-sys-color-surface-variant);
+    border-radius: 12px; margin-top: 5px;
 }
-@keyframes slideDown {
-    from { opacity: 0; transform: translateY(-5px); }
-    to { opacity: 1; transform: translateY(0); }
-}
+.details-inner { overflow: hidden; }
+.details-content { padding: 15px; }
 
-/* Кнопки для пар (0 1 2 3 4) */
-.pair-bubbles {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 10px;
+/* Кнопочки оцінок (Bubbles) */
+.chips-container {
+    display: flex; justify-content: space-between; margin-top: 10px;
 }
-.pair-check-label {
-    position: relative;
-    width: 40px;
-    height: 40px;
-    background: var(--card-bg);
-    border: 2px solid var(--border);
+.chip {
+    width: 38px; height: 38px;
     border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    background: var(--md-sys-color-surface);
+    border: 1px solid var(--md-sys-color-border);
+    display: flex; align-items: center; justify-content: center;
     font-weight: bold;
-    color: var(--text-muted);
-    cursor: pointer;
+    color: var(--md-sys-color-on-surface-variant);
     transition: 0.2s;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
 }
-.pair-check-input { position: absolute; opacity: 0; }
-
-.pair-check-input:checked + .pair-check-label {
-    background: var(--primary);
-    border-color: var(--primary);
+.chip-input { display: none; }
+.chip-input:checked + .chip {
+    background: var(--md-sys-color-primary);
     color: white;
+    border-color: var(--md-sys-color-primary);
     transform: scale(1.1);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
 }
 
-/* --- ГОЛОВНА КНОПКА --- */
+/* === ГОЛОВНА КНОПКА === */
 .fab-container {
-    position: fixed;
-    bottom: 20px;
-    left: 20px;
-    right: 20px;
-    z-index: 100;
+    position: fixed; bottom: 25px; left: 0; right: 0;
+    display: flex; justify-content: center; z-index: 99;
+    pointer-events: none;
 }
-.btn-generate {
-    width: 100%;
-    background: var(--primary);
+.fab {
+    pointer-events: auto;
+    background: var(--md-sys-color-primary);
     color: white;
     border: none;
-    padding: 16px;
-    font-size: 1.1rem;
-    font-weight: bold;
-    border-radius: 12px;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+    height: 56px; padding: 0 40px;
+    border-radius: 16px;
+    font-size: 16px; font-weight: 600;
+    box-shadow: 0 4px 12px rgba(0, 97, 164, 0.4);
+    display: flex; align-items: center; gap: 10px;
     cursor: pointer;
-    transition: 0.2s;
+    transition: transform 0.2s;
 }
-.btn-generate:active { transform: scale(0.98); background: var(--primary-hover); }
+.fab:active { transform: scale(0.96); }
 
-/* Input file styling */
-.file-upload { position: relative; width: 100%; }
-.file-upload input[type="file"] {
-    position: absolute; left: 0; top: 0; opacity: 0;
-    width: 100%; height: 100%; cursor: pointer;
-}
-.file-btn {
-    display: block; width: 100%; padding: 12px;
-    background: var(--card-bg);
-    border: 2px dashed var(--primary);
-    color: var(--primary);
-    text-align: center;
-    border-radius: 8px;
-    font-weight: 600;
-}
 </style>
 </head>
-
 <body>
 
-<div class="header-row">
-    <h1>📄 Рапортичка</h1>
-    <button class="theme-btn" id="themeToggle" onclick="toggleThemeManual()">☀️</button>
+<div class="header animate-enter">
+    <h1>Рапортичка</h1>
+    <button class="icon-btn" onclick="toggleThemeManual()" id="themeIcon">☀️</button>
 </div>
 
-<div class="card" style="padding: 10px;">
-    <div class="side-toggle">
-        <input type="radio" name="side" id="sideLeft" value="left" checked onchange="updateSideVal()">
-        <label for="sideLeft">⬅️ Ліва</label>
+<div class="card animate-enter" style="animation-delay: 0.1s;">
+    <h2>Режим заповнення</h2>
+    <div class="switch-container">
+        <input type="radio" name="side" id="sideLeft" value="left" class="hidden-radio" checked onchange="updateSideVal()">
+        <input type="radio" name="side" id="sideRight" value="right" class="hidden-radio" onchange="updateSideVal()">
         
-        <input type="radio" name="side" id="sideRight" value="right" onchange="updateSideVal()">
-        <label for="sideRight">Права ➡️</label>
+        <div class="switch-bg"></div>
+        
+        <label for="sideLeft" class="switch-option">Ліва</label>
+        <label for="sideRight" class="switch-option">Права</label>
     </div>
     <input type="hidden" id="sideSelect" value="left">
 </div>
 
-<div class="card">
-    <h2>1. Шаблон (.xlsx)</h2>
+<div class="card animate-enter" style="animation-delay: 0.2s;">
+    <h2>1. Файл шаблону</h2>
     <div class="file-upload">
-        <div class="file-btn" id="fileNameDisplay">Натисніть, щоб обрати файл</div>
-        <input type="file" id="uploadTemplate" accept=".xlsx" onchange="document.getElementById('fileNameDisplay').innerText = this.files[0].name">
+        <label for="uploadTemplate" class="file-btn" id="fileBtnText">
+            📁 Натисніть, щоб обрати .xlsx
+        </label>
+        <input type="file" id="uploadTemplate" accept=".xlsx" onchange="handleFile(this)">
     </div>
 </div>
 
-<div class="card">
-    <h2>2. Дата та Група</h2>
-    <div class="date-grid">
+<div class="card animate-enter" style="animation-delay: 0.3s;">
+    <h2>2. Дані</h2>
+    <div class="date-row">
         <div>
-            <label style="font-size:0.8rem; color:var(--text-muted)">День</label>
+            <label>День</label>
             <input type="number" id="dayInput">
         </div>
         <div>
-             <label style="font-size:0.8rem; color:var(--text-muted)">Рік</label>
+            <label>Рік</label>
             <input type="number" id="yearInput">
         </div>
-        <div class="full-width">
-             <label style="font-size:0.8rem; color:var(--text-muted)">Місяць</label>
+        <div class="full">
+            <label>Місяць</label>
             <select id="monthInput">
                 <option value="0">Січня</option>
                 <option value="1">Лютого</option>
@@ -354,56 +386,59 @@ input:checked + .slider:before { transform: translateX(22px); }
                 <option value="11">Грудня</option>
             </select>
         </div>
-        <div class="full-width">
-             <label style="font-size:0.8rem; color:var(--text-muted)">Група</label>
+        <div class="full">
+            <label>Група</label>
             <input type="text" id="groupInput" value="85">
         </div>
     </div>
 </div>
 
-<div class="card">
+<div class="card animate-enter" style="animation-delay: 0.4s;">
     <h2>3. Розклад</h2>
     <div id="schedule"></div>
 </div>
 
-<div class="card">
+<div class="card animate-enter" style="animation-delay: 0.5s;">
     <h2>4. Відсутні</h2>
     <div id="students"></div>
 </div>
 
-<div class="fab-container">
-    <button class="btn-generate" onclick="generateExcel()">Завантажити Excel</button>
+<div class="fab-container animate-enter" style="animation-delay: 0.6s;">
+    <button class="fab" onclick="generateExcel()">
+        <span>Завантажити Excel</span>
+    </button>
 </div>
 
 <script>
-// ===== ТЕМА (AUTO DARK MODE) =====
-const themeBtn = document.getElementById('themeToggle');
-
+// === THEME LOGIC ===
 function checkAutoTheme() {
     const hour = new Date().getHours();
-    // Темна тема: з 16:00 до 06:59
-    const isDarkTime = (hour >= 16 || hour < 7);
-    
-    if (isDarkTime) {
-        document.body.classList.add('dark-mode');
-        themeBtn.innerText = "🌙";
-    } else {
-        document.body.classList.remove('dark-mode');
-        themeBtn.innerText = "☀️";
+    const isDark = (hour >= 16 || hour < 7);
+    if (isDark) document.body.classList.add('dark-mode');
+    updateThemeIcon();
+}
+function toggleThemeManual() {
+    document.body.classList.toggle('dark-mode');
+    updateThemeIcon();
+}
+function updateThemeIcon() {
+    const isDark = document.body.classList.contains('dark-mode');
+    document.getElementById('themeIcon').innerText = isDark ? "🌙" : "☀️";
+}
+checkAutoTheme();
+
+// === FILE LOGIC ===
+function handleFile(input) {
+    if(input.files[0]) {
+        const btn = document.getElementById('fileBtnText');
+        btn.innerText = "✅ " + input.files[0].name;
+        btn.style.borderColor = "var(--md-sys-color-primary)";
+        btn.style.color = "var(--md-sys-color-primary)";
+        btn.style.background = "var(--md-sys-color-primary-container)";
     }
 }
 
-function toggleThemeManual() {
-    document.body.classList.toggle('dark-mode');
-    const isDark = document.body.classList.contains('dark-mode');
-    themeBtn.innerText = isDark ? "🌙" : "☀️";
-}
-
-// Запускаємо перевірку часу при завантаженні
-checkAutoTheme();
-
-// ===== ЛОГІКА ІНТЕРФЕЙСУ =====
-
+// === MAIN JS ===
 function updateSideVal() {
     const isLeft = document.getElementById('sideLeft').checked;
     document.getElementById('sideSelect').value = isLeft ? 'left' : 'right';
@@ -416,7 +451,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('yearInput').value = today.getFullYear();
 });
 
-// ===== ДАНІ =====
 const students = [
   "Білей М.Д.","Бондарець М.Р.","Гаркуша Р.С.","Демченко В.А.","Євстратенко І.В.",
   "Зайченко Я.П.","Кирпа Г.С.","Клименко С.О.","Колесов М.В.","Колісніченко І.Б.",
@@ -424,46 +458,26 @@ const students = [
   "Письменний Т.Р.","Піньковський А.Р.","Самарець І.Д.","Сидоренко О.С.","Скляренко Р.І.",
   "Ткаченко В.М.","Третяк Г.П.","Шеремет Д.С.","Шкуренко П.К.","Шульга О.Г."
 ];
-
-const reasons = [
-  "нем.інт.","інд.","сім. обст.","захворів","без пов.прич.",
-  "хворіє","у лікаря","на конкурсі","техн. пробл.",
-  "пог. самопоч.","відсторонений","запізн."
-];
-
+const reasons = ["нем.інт.","інд.","сім. обст.","захворів","без пов.прич.","хворіє","у лікаря","на конкурсі","техн. пробл.","пог. самопоч.","відсторонений","запізн."];
 const teachersDB = {
-  "Комп'ютерні технології": "Гончаров О.М.",
-  "Іноземна мова": "Токарєва О.В.",
-  "Фізика і астрономія": "Карпова Л.М.",
-  "Технології (М2 'Креслення')": "Васильченко І.І.",
-  "Основи теорії кіл": "Чорний О.А.",
-  "Фізична культура": "Філіппов Д.В.",
-  "Інформатика": "Житченко І.М.",
-  "Технології (М1 'Основи')": "Андрєєв В.О.",
-  "Українська література": "Прощенко І.М.",
-  "Біологія і екологія": "Шайтанова О.М.",
-  "Математика Алгебра": "Коваль І.А.",
-  "Історія України": "Домніна Г.С.",
-  "Українська мова": "Прощенко І.М."
+  "Комп'ютерні технології": "Гончаров О.М.", "Іноземна мова": "Токарєва О.В.", "Фізика і астрономія": "Карпова Л.М.",
+  "Технології (М2 'Креслення')": "Васильченко І.І.", "Основи теорії кіл": "Чорний О.А.", "Фізична культура": "Філіппов Д.В.",
+  "Інформатика": "Житченко І.М.", "Технології (М1 'Основи')": "Андрєєв В.О.", "Українська література": "Прощенко І.М.",
+  "Біологія і екологія": "Шайтанова О.М.", "Математика Алгебра": "Коваль І.А.", "Історія України": "Домніна Г.С.", "Українська мова": "Прощенко І.М."
 };
+const monthNames = ["Січня", "Лютого", "Березня", "Квітня", "Травня", "Червня", "Липня", "Серпня", "Вересня", "Жовтня", "Листопада", "Грудня"];
 
-const monthNames = [
-    "Січня", "Лютого", "Березня", "Квітня", "Травня", "Червня", 
-    "Липня", "Серпня", "Вересня", "Жовтня", "Листопада", "Грудня"
-];
-
-// ===== ГЕНЕРАЦІЯ РОЗКЛАДУ =====
+// Generate Schedule
 const schedule = document.getElementById("schedule");
-
 for (let i = 0; i <= 4; i++) {
   schedule.innerHTML += `
-    <div class="pair-card">
-      <span class="pair-header">${i} пара</span>
-      <div class="pair-inputs">
+    <div class="pair-item">
+      <div class="pair-item-header">${i} пара</div>
+      <div class="pair-flex">
         <select id="subj_${i}" onchange="autoTeacher(${i})">
-            <option value="">— Оберіть предмет —</option>
-            ${Object.keys(teachersDB).map(s => `<option value="${s}">${s}</option>`).join("")}
-            <option value="custom">Вписати вручну...</option>
+          <option value="">— Оберіть предмет —</option>
+          ${Object.keys(teachersDB).map(s => `<option value="${s}">${s}</option>`).join("")}
+          <option value="custom">Вписати вручну...</option>
         </select>
         <input id="teach_${i}" placeholder="Прізвище викладача">
       </div>
@@ -473,84 +487,67 @@ for (let i = 0; i <= 4; i++) {
 function autoTeacher(i) {
   const subjEl = document.getElementById(`subj_${i}`);
   const teacherEl = document.getElementById(`teach_${i}`);
-  const subjValue = subjEl.value;
-
-  if (teachersDB[subjValue]) {
-    teacherEl.value = teachersDB[subjValue];
-  } else if (subjValue !== "custom") {
-    teacherEl.value = "";
-  }
-
-  const isSelected = (subjValue !== "");
-
-  students.forEach((_, studentIndex) => {
-    const checkboxes = document.querySelectorAll(`.p${studentIndex}`);
-    checkboxes.forEach(cb => {
-        if (cb.value == i) {
-            cb.checked = isSelected;
-        }
+  if (teachersDB[subjEl.value]) teacherEl.value = teachersDB[subjEl.value];
+  else if (subjEl.value !== "custom") teacherEl.value = "";
+  
+  const isSelected = (subjEl.value !== "");
+  students.forEach((_, sIdx) => {
+    document.querySelectorAll(`.p${sIdx}`).forEach(cb => {
+       if (cb.value == i) { cb.checked = isSelected; }
     });
   });
 }
 
-// ===== ГЕНЕРАЦІЯ СТУДЕНТІВ =====
+// Generate Students
 const studentsDiv = document.getElementById("students");
-
 students.forEach((s, i) => {
   studentsDiv.innerHTML += `
-    <div class="student-row">
-      <div class="student-header">
-        <span class="student-name">${s}</span>
-        <label class="switch">
+    <div>
+      <div class="student-item">
+        <span style="font-weight:500; font-size:15px">${s}</span>
+        <label class="m3-switch">
             <input type="checkbox" id="chk_${i}" onchange="toggle(${i})">
-            <span class="slider"></span>
+            <span class="m3-slider"></span>
         </label>
       </div>
       
       <div class="student-details" id="det_${i}">
-        <label style="font-size:0.8rem; color:var(--text-muted)">Причина:</label>
-        <select id="reason_${i}" style="margin-top:5px; margin-bottom:15px;">
-          ${reasons.map(r => `<option>${r}</option>`).join("")}
-        </select>
-
-        <label style="font-size:0.8rem; color:var(--text-muted)">Пропущені пари:</label>
-        <div class="pair-bubbles">
-          ${[0,1,2,3,4].map(pairNum => `
-            <div>
-              <input type="checkbox" class="pair-check-input p${i}" id="p_${i}_${pairNum}" value="${pairNum}">
-              <label for="p_${i}_${pairNum}" class="pair-check-label">${pairNum}</label>
-            </div>
-          `).join('')}
+        <div class="details-inner">
+           <div class="details-content">
+             <label>Причина:</label>
+             <select id="reason_${i}">${reasons.map(r => `<option>${r}</option>`).join("")}</select>
+             
+             <div style="margin-top:15px; font-size:13px; color:var(--md-sys-color-on-surface-variant); margin-bottom:5px">Пропущені пари:</div>
+             <div class="chips-container">
+               ${[0,1,2,3,4].map(p => `
+                 <label>
+                   <input type="checkbox" class="chip-input p${i}" value="${p}" id="p_${i}_${p}">
+                   <div class="chip">${p}</div>
+                 </label>
+               `).join('')}
+             </div>
+           </div>
         </div>
       </div>
     </div>`;
 });
 
 function toggle(i) {
-  const details = document.getElementById(`det_${i}`);
-  const isChecked = document.getElementById(`chk_${i}`).checked;
-  
-  if (isChecked) {
-      details.style.display = "block";
-  } else {
-      details.style.display = "none";
-  }
+  const grid = document.getElementById(`det_${i}`);
+  const checked = document.getElementById(`chk_${i}`).checked;
+  grid.style.gridTemplateRows = checked ? "1fr" : "0fr";
 }
 
-// ===== EXCEL ЛОГІКА =====
-
+// === EXCEL LOGIC (No changes) ===
 function styleCell(cell, bold, size=11, italic=false) {
   cell.font = { name: "Times New Roman", size: size, bold: bold, italic: italic };
   cell.alignment = { horizontal: "center", vertical: "middle" };
 }
-
 async function generateExcel() {
   const file = document.getElementById("uploadTemplate").files[0];
-  if (!file) { alert("⚠️ Будь ласка, оберіть файл шаблону!"); return; }
-
-  const side = document.getElementById("sideSelect").value;
+  if (!file) { alert("Будь ласка, оберіть файл шаблону!"); return; }
   
-  // Колонки (ЛІВА = Default, ПРАВА = Зміщена на 1)
+  const side = document.getElementById("sideSelect").value;
   const cols = {
       header:   side === 'left' ? "A2" : "K2",
       subject:  side === 'left' ? "B"  : "L",
@@ -562,7 +559,6 @@ async function generateExcel() {
   const wb = new ExcelJS.Workbook();
   await wb.xlsx.load(await file.arrayBuffer());
   const ws = wb.getWorksheet(1);
-
   const day = document.getElementById('dayInput').value;
   const monthIdx = document.getElementById('monthInput').value;
   const yearFull = document.getElementById('yearInput').value.toString();
@@ -579,26 +575,18 @@ async function generateExcel() {
   const headerCell = ws.getCell(cols.header);
   headerCell.value = {
     richText: [
-      { text: '"', font: fontBase },
-      { text: '  ' + day + '  ', font: fontUnder }, 
-      { text: '"   ', font: fontBase },
-      { text: '   ' + monthStr, font: fontUnder }, 
-      { text: ' ', font: fontBase },
-      { text: yearPrefix, font: fontYearPrefix },
-      { text: yearSuffix, font: fontYearSuffix },
-      { text: ' р.  Гр. №', font: fontBase }, 
-      { text: '  ' + groupNum + '  ', font: fontUnder },
-      { text: '.', font: fontBase }
+      { text: '"', font: fontBase }, { text: '  ' + day + '  ', font: fontUnder }, { text: '"   ', font: fontBase },
+      { text: '   ' + monthStr, font: fontUnder }, { text: ' ', font: fontBase },
+      { text: yearPrefix, font: fontYearPrefix }, { text: yearSuffix, font: fontYearSuffix },
+      { text: ' р.  Гр. №', font: fontBase }, { text: '  ' + groupNum + '  ', font: fontUnder }, { text: '.', font: fontBase }
     ]
   };
   headerCell.alignment = { horizontal: "center", vertical: "middle" };
 
   const rowMap = {0:4, 1:5, 2:6, 3:7, 4:8}; 
-  
   for (let i = 0; i <= 4; i++) {
     const subjVal = document.getElementById(`subj_${i}`).value;
     const teachVal = document.getElementById(`teach_${i}`).value;
-    
     if (subjVal || teachVal) {
         ws.getCell(`${cols.subject}${rowMap[i]}`).value = subjVal;
         ws.getCell(`${cols.teacher}${rowMap[i]}`).value = teachVal;
@@ -611,7 +599,6 @@ async function generateExcel() {
   students.forEach((s, i) => {
     if(document.getElementById(`chk_${i}`).checked){
       const reason = document.getElementById(`reason_${i}`).value;
-      
       const nameCell = ws.getCell(`${cols.subject}${row}`);
       nameCell.value = `${s} (${reason})`;
       nameCell.font = { name: "Times New Roman", size: 11, italic: false };
@@ -619,8 +606,7 @@ async function generateExcel() {
 
       let hours = 0;
       document.querySelectorAll(`.p${i}:checked`).forEach(p => {
-        const pairIndex = p.value;
-        const colLetter = cols.grades[pairIndex];
+        const colLetter = cols.grades[p.value];
         if (colLetter) {
             ws.getCell(`${colLetter}${row}`).value = "2";
             styleCell(ws.getCell(`${colLetter}${row}`), true, 11, false);
@@ -639,6 +625,5 @@ async function generateExcel() {
   saveAs(new Blob([buf]), `raport_${day}_${monthStr}${sideSuffix}.xlsx`);
 }
 </script>
-
 </body>
 </html>

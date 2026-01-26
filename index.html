@@ -1,597 +1,594 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>85-CORE System</title>
-  <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      /* --- DARK MODE (DEFAULT) --- */
-      --bg-color: #0d1117;
-      --card-bg: #161b22;
-      --card-border: #30363d;
-      --text-main: #e6edf3;
-      --text-sec: #8b949e;
-      --accent-glow: rgba(56, 139, 253, 0.15);
-      --accent-border: #1f6feb;
-      --btn-bg: #21262d;
-      --btn-hover: #30363d;
-      
-      /* Global Settings */
-      --radius: 12px;
-      --font-family: 'DotGothic16', sans-serif;
-      --base-spacing: 1px;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Starosta Kit</title>
 
-    /* --- LIGHT MODE (VINTAGE AUTUMN) --- */
-    body.light-mode {
-      --bg-color: #d0c8b6;
-      --card-bg: #dbd4c4;
-      --card-border: #b0a590;
-      --text-main: #3d2f25;
-      --text-sec: #6b5a4a;
-      --accent-glow: rgba(166, 77, 24, 0.1);
-      --accent-border: #a64d18;
-      --btn-bg: #c4bbab;
-      --btn-hover: #b5ac9d;
-    }
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
 
-    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+<script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 
-    body {
-      font-family: var(--font-family);
-      background: var(--bg-color);
-      color: var(--text-main);
-      margin: 0;
-      padding: 0;
-      transition: background 0.4s ease, color 0.4s ease;
-      overflow-x: hidden;
-      line-height: 1.4;
-      letter-spacing: var(--base-spacing);
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
+<style>
+/* === VARIABLES === */
+:root {
+    --bg-color: #0f172a;
+    --glass-bg: rgba(30, 41, 59, 0.75);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --primary: #3b82f6;
+    --primary-glow: rgba(59, 130, 246, 0.5);
+    --accent: #8b5cf6;
+    --accent-glow: rgba(139, 92, 246, 0.5);
+    --input-bg: rgba(15, 23, 42, 0.6);
+    --radius: 24px;
+    --input-height: 54px;
+    --anim-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    --anim-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+}
 
-    /* --- LOADING SCREEN --- */
-    #loader {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: #000000;
-      z-index: 9999;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      transition: opacity 0.6s ease, visibility 0.6s;
-    }
-    .loader-content {
-      text-align: center;
-      animation: fadeIn 0.8s ease-out;
-    }
-    .grad-cap {
-      width: 80px;
-      height: 80px;
-      fill: white;
-      margin-bottom: 20px;
-    }
-    .loader-title {
-      font-size: 32px;
-      font-weight: 400;
-      letter-spacing: 6px;
-      color: white;
-      margin: 0;
-      text-transform: uppercase;
-    }
-    .hidden-loader {
-      opacity: 0;
-      visibility: hidden;
-      pointer-events: none;
-    }
+body.light-mode {
+    --bg-color: #f8fafc;
+    --glass-bg: rgba(255, 255, 255, 0.8);
+    --glass-border: rgba(0, 0, 0, 0.05);
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+    --primary: #2563eb;
+    --input-bg: rgba(255, 255, 255, 0.6);
+}
 
-    /* --- HEADER --- */
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 15px 24px;
-      background: color-mix(in srgb, var(--bg-color), transparent 15%);
-      backdrop-filter: blur(12px);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      border-bottom: 1px solid var(--card-border);
-      height: 70px;
-      flex-shrink: 0;
-    }
-    
-    .header-left {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-    }
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
-    /* Back Button */
-    #back-btn {
-      display: none; /* Hidden by default */
-      background: transparent;
-      border: 1px solid var(--card-border);
-      color: var(--text-main);
-      padding: 6px 12px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-family: var(--font-family);
-      text-transform: uppercase;
-      font-size: 14px;
-    }
-    #back-btn:hover { background: var(--btn-hover); }
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    margin: 0; padding: 20px;
+    min-height: 100vh;
+    transition: background-color 0.5s ease;
+    overflow-x: hidden;
+}
 
-    header h1 {
-      margin: 0;
-      font-size: 20px;
-      font-weight: 400;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-    }
-    #date {
-      font-size: 12px;
-      color: var(--text-sec);
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-    .theme-toggle {
-      cursor: pointer;
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: background 0.2s;
-    }
-    .theme-toggle:hover { background: var(--btn-hover); }
+/* === BACKGROUND === */
+.aurora-bg {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1;
+    overflow: hidden; pointer-events: none;
+}
+.blob {
+    position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.35;
+    animation: float 12s infinite ease-in-out;
+}
+.blob-1 { top: -10%; left: -10%; width: 50vh; height: 50vh; background: var(--primary); }
+.blob-2 { bottom: -10%; right: -10%; width: 60vh; height: 60vh; background: var(--accent); animation-delay: -6s; }
+@keyframes float { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(30px, 40px); } }
 
-    /* --- MAIN CONTAINER --- */
-    #main-container {
-      flex-grow: 1;
-      position: relative;
-      overflow-y: auto;
-      overflow-x: hidden;
-    }
+.container {
+    max-width: 480px; margin: 0 auto;
+    display: flex; flex-direction: column; min-height: 90vh; justify-content: center;
+}
 
-    /* --- MENU VIEW (WIDGETS) --- */
-    #menu-view {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      height: 100%;
-      padding: 20px;
-      animation: fadeIn 0.5s ease;
-    }
+/* === GLASS CARD === */
+.glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius);
+    padding: 24px; margin-bottom: 20px;
+    box-shadow: 0 20px 40px -10px rgba(0,0,0,0.3);
+}
 
-    .menu-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
-      width: 100%;
-      max-width: 600px;
-    }
+/* === LOGIN SCREEN === */
+.login-header { text-align: center; margin-bottom: 30px; animation: fadeIn 0.8s ease; }
+.login-header h1 { margin: 10px 0 5px; font-size: 28px; font-weight: 800; letter-spacing: -0.5px; }
+.login-header p { margin: 0; color: var(--text-muted); font-size: 14px; }
 
-    .menu-card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 20px;
-      aspect-ratio: 1 / 1; /* Square widgets */
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      padding: 24px;
-      cursor: pointer;
-      transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
-      position: relative;
-      overflow: hidden;
-    }
+.section-label {
+    font-size: 12px; font-weight: 700; color: var(--primary);
+    text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px;
+}
 
-    .menu-card:hover {
-      transform: translateY(-5px);
-      border-color: var(--text-sec);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-    }
-    
-    .menu-card:active {
-      transform: scale(0.98);
-    }
+/* DEPT BUTTONS */
+.dept-grid {
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 0;
+}
+.dept-btn {
+    padding: 18px 0; border: 2px solid var(--glass-border); border-radius: 16px;
+    background: var(--input-bg); color: var(--text-main); font-weight: 700; font-size: 15px;
+    cursor: pointer; transition: all 0.3s var(--anim-spring);
+}
+.dept-btn:hover { transform: translateY(-2px); border-color: var(--primary); }
+.dept-btn:active { transform: scale(0.95); }
+.dept-btn.active {
+    background: var(--primary); color: white; border-color: var(--primary);
+    box-shadow: 0 8px 20px var(--primary-glow);
+}
 
-    .menu-icon svg {
-      width: 48px;
-      height: 48px;
-      stroke: var(--text-main);
-      opacity: 0.8;
-    }
+/* ANIMATIONS */
+.anim-wrapper {
+    display: grid; grid-template-rows: 0fr; opacity: 0;
+    transition: grid-template-rows 0.5s var(--anim-smooth), opacity 0.5s ease, margin 0.5s ease;
+    margin-top: 0;
+}
+.anim-wrapper.open { grid-template-rows: 1fr; opacity: 1; margin-top: 24px; }
+.anim-inner { overflow: hidden; }
 
-    .menu-label {
-      font-size: 18px;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      font-weight: 400;
-      color: var(--text-main);
-    }
+/* INPUTS & SELECTS */
+.pixel-select, .pixel-input {
+    width: 100%; height: var(--input-height);
+    background: var(--input-bg); border: 2px solid var(--glass-border);
+    border-radius: 16px; color: var(--text-main); font-size: 16px; font-weight: 500;
+    padding: 0 16px; outline: none; appearance: none;
+    transition: 0.3s;
+}
+.pixel-select {
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 16px center;
+}
+.pixel-input:focus, .pixel-select:focus { border-color: var(--primary); box-shadow: 0 0 0 4px var(--primary-glow); }
 
-    /* Dot pattern decoration for menu cards */
-    .menu-card::before {
-      content: '';
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      width: 8px;
-      height: 8px;
-      background: var(--accent-border);
-      border-radius: 50%;
-      opacity: 0.5;
-    }
+/* DATE GRID */
+.date-grid {
+    display: grid; grid-template-columns: 0.8fr 2fr 1fr; gap: 10px;
+}
 
-    /* --- SCHEDULE VIEW --- */
-    #schedule-view {
-      display: none; /* Hidden by default */
-      padding-top: 20px;
-      animation: slideIn 0.4s ease;
-    }
-    
-    .controls {
-      display: flex;
-      justify-content: center;
-      gap: 12px;
-      margin-bottom: 24px;
-      padding: 0 10px;
-      flex-wrap: wrap;
-    }
-    button.ctrl-btn {
-      padding: 12px 24px;
-      border-radius: 4px;
-      border: 1px solid var(--card-border);
-      font-size: 16px;
-      font-weight: 400;
-      cursor: pointer;
-      background: var(--btn-bg);
-      color: var(--text-main);
-      transition: all 0.2s ease;
-      font-family: var(--font-family);
-      text-transform: uppercase;
-      letter-spacing: 2px;
-    }
-    button.ctrl-btn:hover { 
-      background: var(--btn-hover); 
-      border-color: var(--text-sec);
-    }
+/* START BUTTON & BOTTOM ACTIONS */
+.btn-wrapper {
+    display: grid; grid-template-rows: 0fr; opacity: 0;
+    transition: grid-template-rows 0.5s var(--anim-smooth), opacity 0.5s ease, margin 0.5s ease;
+}
+.btn-wrapper.visible { grid-template-rows: 1fr; opacity: 1; margin-top: 24px; }
 
-    .schedule {
-      max-width: 650px;
-      margin: auto;
-      padding: 0 16px 60px 16px;
-    }
-    .schedule h2 {
-      text-align: center;
-      margin-bottom: 30px;
-      font-size: 16px;
-      font-weight: 400;
-      color: var(--text-sec);
-      text-transform: uppercase;
-      letter-spacing: 4px;
-    }
-    .day {
-      background: var(--card-bg);
-      margin-bottom: 18px;
-      padding: 24px;
-      border-radius: var(--radius);
-      border: 1px solid var(--card-border);
-    }
-    .day.current-day {
-      border: 1px solid var(--accent-border);
-      box-shadow: 0 0 20px var(--accent-glow);
-      background: linear-gradient(to bottom right, var(--card-bg), var(--accent-glow));
-    }
-    .day h3 {
-      margin: 0 0 20px 0;
-      font-size: 24px;
-      font-weight: 400;
-      color: var(--text-main);
-      display: flex;
-      align-items: center;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-    }
-    .day.current-day h3::after {
-      content: '●';
-      font-size: 14px;
-      color: var(--accent-border);
-      margin-left: 12px;
-      animation: pulse 2s infinite;
-    }
-    ul { padding: 0; margin: 0; list-style: none; }
-    li {
-      margin-bottom: 16px;
-      display: flex;
-      align-items: baseline;
-      font-size: 17px;
-      border-bottom: 1px dotted var(--card-border); 
-      padding-bottom: 12px;
-    }
-    li:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
-    li span.time {
-      font-weight: 400;
-      color: var(--text-sec);
-      font-size: 15px;
-      min-width: 60px;
-      margin-right: 12px;
-    }
-    .subject-text { flex-grow: 1; color: var(--text-main); }
-    .room {
-      background: rgba(120, 120, 120, 0.1); 
-      color: var(--text-main);
-      padding: 4px 8px;
-      border-radius: 4px;
-      font-size: 14px;
-      margin-left: 12px;
-      white-space: nowrap;
-      border: 1px solid var(--card-border);
-    }
-    .absent { width: 100%; color: var(--text-sec); font-size: 15px; opacity: 0.6; text-transform: uppercase; letter-spacing: 1px; }
+.actions-bar {
+    position: fixed; bottom: 20px; left: 20px; right: 20px; z-index: 50;
+    display: flex; gap: 10px; max-width: 480px; margin: 0 auto;
+}
 
-    /* --- IFRAME VIEW --- */
-    #iframe-view {
-      display: none; /* Hidden by default */
-      width: 100%;
-      height: 100%;
-      animation: slideIn 0.4s ease;
-    }
-    iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-      background: white; /* Ensure iframe has background if loading slow */
-    }
+.start-btn {
+    width: 100%; height: 60px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-glow));
+    border: none; border-radius: 18px;
+    color: white; font-size: 16px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    cursor: pointer; box-shadow: 0 10px 25px var(--primary-glow);
+    transition: transform 0.2s; flex: 1;
+}
+.start-btn.secondary {
+    background: linear-gradient(135deg, var(--accent), #7c3aed);
+    box-shadow: 0 10px 25px var(--accent-glow);
+}
+.start-btn:active { transform: scale(0.97); }
 
-    /* --- UTILS --- */
-    .hidden { display: none !important; }
+/* APP SCREEN */
+.app-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.schedule-item { margin-bottom: 16px; border-bottom: 1px solid var(--glass-border); padding-bottom: 16px; }
+.student-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--glass-border); }
+.item-label { font-size: 11px; color: var(--primary); font-weight: 800; margin-bottom: 8px; display: block; }
 
-    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-    @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-    @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
+/* UTILS */
+.hidden { display: none !important; }
+.fade-in { animation: fadeIn 0.6s ease backwards; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.toast {
+    position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(20px);
+    background: rgba(15, 23, 42, 0.95); color: white; padding: 12px 24px; border-radius: 50px;
+    font-size: 14px; opacity: 0; transition: 0.3s; z-index: 100; border: 1px solid var(--glass-border);
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-    @media (max-width: 600px) {
-      .menu-grid { grid-template-columns: 1fr; max-width: 300px; }
-      .menu-card { aspect-ratio: 2 / 1; flex-direction: row; align-items: center; padding: 0 24px; }
-      .menu-card::before { top: 50%; transform: translateY(-50%); }
-      .menu-icon { margin-right: 20px; }
-      .header-left { gap: 10px; }
-      header h1 { font-size: 18px; }
-    }
-  </style>
+/* SWITCH */
+.switch { position: relative; width: 46px; height: 24px; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.slider { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: var(--input-bg); border-radius: 34px; transition: .3s; }
+.slider:before { content: ""; position: absolute; height: 18px; width: 18px; left: 3px; bottom: 3px; background: white; border-radius: 50%; transition: .3s; }
+input:checked + .slider { background: var(--primary); }
+input:checked + .slider:before { transform: translateX(22px); }
+
+/* DETAILS */
+.student-details { height: 0; overflow: hidden; transition: height 0.3s ease; background: rgba(0,0,0,0.1); border-radius: 12px; margin-top: 4px; }
+.details-content { padding: 12px; }
+.chips { display: flex; gap: 5px; margin-top: 10px; }
+.chip-lbl { flex: 1; }
+.chip-div { height: 40px; display: flex; align-items: center; justify-content: center; background: var(--input-bg); border-radius: 8px; font-weight: 600; border: 1px solid transparent; transition: 0.2s; }
+.chip-lbl input:checked + .chip-div { background: var(--primary); color: white; border-color: var(--primary); }
+
+</style>
 </head>
-<body class="dark-mode">
+<body>
 
-  <div id="loader">
-    <div class="loader-content">
-      <svg class="grad-cap" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path d="M12 2L1 7L12 12L23 7L12 2Z"/>
-        <path d="M3.49996 11.4116V14.6356C3.49996 16.8447 7.30555 18.6356 12 18.6356C16.6944 18.6356 20.5 16.8447 20.5 14.6356V11.4116L12 15.2753L3.49996 11.4116Z"/>
-      </svg>
-      <h1 class="loader-title">85-CORE</h1>
-    </div>
-  </div>
+<div class="aurora-bg">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+</div>
 
-  <header>
-    <div class="header-left">
-      <button id="back-btn" onclick="goHome()">&#60; Назад</button>
-      <div>
-        <h1 id="header-title">85-CORE</h1>
-        <div id="date"></div>
-      </div>
-    </div>
-    <div class="theme-toggle" onclick="toggleTheme()">
-      <svg id="theme-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-      </svg>
-    </div>
-  </header>
+<div id="toast" class="toast">Повідомлення</div>
 
-  <div id="main-container">
+<div class="container">
+
+    <div id="loginScreen">
+        
+        <div class="login-header">
+            <span class="material-icons-round" style="font-size: 60px; color: var(--primary); filter: drop-shadow(0 0 15px var(--primary-glow));">school</span>
+            <h1>QuickRaport</h1>
+            <p>Система генерації рапортичок</p>
+        </div>
+
+        <div class="glass-card fade-in">
+            
+            <div class="section-label">Оберіть відділення</div>
+            <div class="dept-grid">
+                <button class="dept-btn" onclick="selectDept('KI', this)">КІ</button>
+                <button class="dept-btn" onclick="selectDept('RZ', this)">РЗ</button>
+                <button class="dept-btn" onclick="selectDept('RT', this)">РТ</button>
+            </div>
+
+            <div id="groupAnimWrapper" class="anim-wrapper">
+                <div class="anim-inner">
+                    <div class="section-label" style="margin-top: 10px;">Оберіть групу</div>
+                    <select id="groupSelect" class="pixel-select" onchange="checkGroup()">
+                        <option value="" disabled selected>— Список груп —</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="btnAnimWrapper" class="btn-wrapper">
+                <div class="anim-inner">
+                    <button class="start-btn" onclick="enterApp()">
+                        Почати <span class="material-icons-round">arrow_forward</span>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="appScreen" class="hidden fade-in">
+        <div class="app-header">
+            <div>
+                <h2 id="headerTitle" style="margin:0; font-size:22px;">Група</h2>
+                <div id="headerSubtitle" style="font-size:13px; color:var(--text-muted);">Панель управління</div>
+            </div>
+            <button onclick="toggleTheme()" style="background:none; border:none; color:var(--text-main); cursor:pointer;">
+                <span class="material-icons-round" id="themeIcon" style="font-size:28px;">light_mode</span>
+            </button>
+        </div>
+
+        <div class="glass-card">
+            <div class="section-label"><span class="material-icons-round" style="font-size:14px; vertical-align:middle;">tune</span> Дата</div>
+            <div class="date-grid">
+                <input type="number" id="dayInput" class="pixel-input" placeholder="ДД">
+                <select id="monthInput" class="pixel-select" style="text-align:left;">
+                    <option value="0">Січень</option><option value="1">Лютий</option>
+                    <option value="2">Березень</option><option value="3">Квітень</option>
+                    <option value="4">Травень</option><option value="5">Червень</option>
+                    <option value="6">Липень</option><option value="7">Серпень</option>
+                    <option value="8">Вересень</option><option value="9">Жовтень</option>
+                    <option value="10">Листопад</option><option value="11">Грудень</option>
+                </select>
+                <input type="number" id="yearInput" class="pixel-input" placeholder="РРРР">
+            </div>
+            <div style="display:flex; background:var(--input-bg); padding:4px; border-radius:12px; margin-top:15px;">
+                <button class="dept-btn" style="flex:1; border:none; padding:10px;" id="btnLeft" onclick="setSide('left')">Ліва (A-H)</button>
+                <button class="dept-btn" style="flex:1; border:none; padding:10px; background:transparent;" id="btnRight" onclick="setSide('right')">Права (K-R)</button>
+            </div>
+            <input type="hidden" id="sideVal" value="left">
+        </div>
+
+        <div class="glass-card">
+            <div class="section-label"><span class="material-icons-round" style="font-size:14px; vertical-align:middle;">schedule</span> Розклад</div>
+            <div id="scheduleContainer"></div>
+        </div>
+
+        <div class="glass-card" style="padding-bottom:100px;">
+            <div class="section-label"><span class="material-icons-round" style="font-size:14px; vertical-align:middle;">people</span> Студенти</div>
+            <div id="studentsContainer"></div>
+        </div>
+
+        <div class="actions-bar">
+            <button class="start-btn" onclick="generateExcel()">
+                <span class="material-icons-round">download</span> Завантажити
+            </button>
+            <button class="start-btn secondary" onclick="sendToDept()">
+                <span class="material-icons-round">send</span> Надіслати
+            </button>
+        </div>
+    </div>
+
+</div>
+
+<script>
+// === EMAILS CONFIG ===
+const deptEmails = {
+    "KI": "email_ki@example.com", 
+    "RZ": "email_rz@example.com",
+    "RT": "email_rt@example.com"
+};
+
+const templateBase64 = "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"; // ВСТАВТЕ СЮДИ ВАШ BASE64 КОД
+
+const groupsDB = {
+    "KI": {
+        "91": { name: "Група 91 (КІ)", startYear: 2025, students: ["Аніщенко О.М.", "Бараусов Д.О.", "Баторик А.А.", "Галецький В.А.", "Гридньов М.А.", "Демченко О.В.", "Долженко Д.С.", "Капля К.О.", "Кравченко О.П.", "Курганський А.О.", "Ланний А.В.", "Майор А.Р.", "Максименко Д.О.", "Могилка М.Д.", "Морус А.А.", "Нікульшина П.О.", "Носуля О.Г.", "Олещенко Р.А.", "Орешкин А.В.", "Свєженцева В.М.", "Соловйов Г.В.", "Струнін Е.М.", "Тюкова Н.С.", "Шрамко А.І."] },
+        "85": { name: "Група 85 (КІ)", startYear: 2024, students: ["Білей М.Д.","Бондарець М.Р.","Гаркуша Р.С.","Демченко В.А.","Євстратенко І.В.","Зайченко Я.П.","Кирпа Г.С.","Клименко С.О.","Колесов М.В.","Колісніченко І.Б.","Кривенко М.О.","Ледньов Є.О.","Масалова В.М.","Мурзін Т.Б.","Нетудихата Б.С.","Письменний Т.Р.","Піньковський А.Р.","Самарець І.Д.","Сидоренко О.С.","Скляренко Р.І.","Ткаченко В.М.","Третяк Г.П.","Шеремет Д.С.","Шкуренко П.К.","Шульга О.Г."] },
+        "75": { name: "Група 75 (КІ)", startYear: 2023, students: ["Бурлаков Б.В.","Годунов Д.О.","Долгов І.О.","Доценко Д.Р.","Кряшко Я.Я.","Лисаков А.А.","Лігачов Є.А.","Матвієвич С.О.","Мізинчук Д.Д.","Мокряк А.С.","Мотрич І.Є.","Овчаренко Д.О.","Півторацький О.С.","Румянцева К.О.","Семиліт І.Є.","Сівірюк Я.А.","Удовіков Н.І.","Усенко М.Ю.","Черкашин О.С.","Шуляк К.Д."] }
+    },
+    "RZ": {
+        "87": { name: "Група 87 (РЗ)", startYear: 2025, students: ["Білокопитов О.С.","Бондюк М.С.","Брикалін О.С.","Бриндін О.О.","Глазичева Г.В.","Горбенко О.С.","Динисюк М.М.","Догонов Д.В.","Догонов І.В.","Єгоров Т.Д.","Карпіков А.А.","Ковалдін Д.О.","Мирошниченко Є.С.","Міняйло Б.Р.","Москаленко В.П.","Новак М.В.","Павлюк П.О.","Паскалов Д.О.","Пересунько А.О.","Петренко П.К.","Подобєдов А.К.","Порхун О.А.","Самойленко В.І.","Таран М.С.","Тертишник О.О.","Тимошенко О.А.","Торянський М.С.","Шевцов Д.В."] },
+        "82": { name: "Група 82 (РЗ)", startYear: 2024, students: ["Білик А.А.","Будник Б.О.","Дудкін М.С.","Євдошенко М.О.","Єршов Л.М.","Журіков М.С.","Карповець І.А.","Козар Р.Г.","Коломоєць Н.О.","Коротаєв Л.В.","Косяченко А.В.","Лємягов Д.М.","Лисичний В.А.","Литвин Д.І.","Лук’яненко В.М.","Мартинов І.О.","Мисик В.А.","Новосьолова В.А.","Парушкін Д.О.","Петрук К.Г.","Семенець Р.А.","Сушко М.М.","Терещенко М.А.","Цирулик А.С.","Шеремєтов М.І.","Юрчук Б.М.","Якубенко Д.А."] },
+        "70": { name: "Група 70 (РЗ)", startYear: 2022, students: ["Бережний М.А.","Ващук К.М.","Гетьман О.С.","Деменко Я.В.","Журавель Д.А.","Залогін П.К.","Іванов Г.А.","Кисель Д.Я.","Коваленко М.Д.","Курєгян А.В.","Лебедєв М.О.","Настобурка С.І.","Павлов М.В.","Подорванов Д.В.","Прибиток Д.В.","Прудченко О.Д.","Ражда М.В.","Сошенков М.С.","Строчка Д.Р.","Сундарцев К.С.","Тимощенко Я.Р.","Ткаченко Д.В.","Шаповалов І.Е.","Щербина М.О.","Яловенко М.О."] }
+    },
+    "RT": {
+        "81": { name: "Група 81 (РТ)", startYear: 2024, students: ["Бойко М.В.","Гапоченко І.А.","Головін А.О.","Загородній М.В.","Заозірний І.А.","Іващенко К.О.","Іллензеєр Д.О.","Карасєвич М.О.","Коваленко Г.О.","Ковальчук М.С.","Кордін І.О.","Мартиненко Є.Р.","Матвієнко І.О.","Мота Н.А.","Панков Р.Д.","Пилипенко Л.М.","Савенко В.А.","Сиваш Т.Т.","Сірий Д.С.","Солощенко Г.О.","Солтан-Шварц В.О.","Тарасюк В.Д.","Тацуля Д.О.","Ходос Д.О.","Швагер Є.М.","Шпак М.О.","Яценко А.Р."] },
+        "76": { name: "Група 76 (РТ)", startYear: 2023, students: ["Басалаєв Д.В.","Валентіров А.О.","Гладкий Є.Р.","Гребенюк Н.П.","Димарьов К.О.","Єфімов О.К.","Кагала І.А.","Кононенко Р.Ю.","Корольков Б.О.","Костюченко О.С.","Кудін М.О.","Кузнецов В.І.","Ластовін М.В.","Листопад Н.В.","Мальований М.В.","Марініч А.І.","Олефіров Я.Д.","Отінов М.Д.","Панкратов Д.М.","Сівцов М.О.","Скоробогатько М.Д.","Смольянін М.С.","Стрижко М.С.","Трофимов О.К.","Шаклін О.О.","Шпак Д.Е."] },
+        "69": { name: "Група 69 (РТ)", startYear: 2022, students: ["Богданова А.Д.","Буданов Д.І.","Гонтар Д.Д.","Денисов В.Р.","Дусик В.О.","Кайстря А.С.","Коваленко Д.О.","Кряж Б.С.","Кулак А.О.","Марченко Н.В.","Михайленко М.С.","Перекопський В.М.","Потягайло Д.Є.","Соломена Є.В.","Солопов Д.Є.","Сушко І.М.","Тимошенко Я.В.","Фоменко В.В.","Швайдак І.К.","Якименко Т.В."] }
+    }
+};
+
+const curriculumDB = {
+    1: { "Українська мова": "Каліста Ю.В.", "Історія України": "Домніна Г.С.", "Українська література": "Сесь О.В.", "Громадянська освіта": "Юшин П.Б.", "Математика": "Коваль І.А.", "Хімія": "Кондратова О.О.", "Біологія і екологія": "Кондратова О.О.", "Фізика і астрономія": "Махинько С.В.", "Фізична культура": "Філіппов Д.В.", "Інформатика": "Житченко І.М.", "Географія": "Шеремет Н.М.", "Іноземна мова": "Токарєва О.В." },
+    2: { "Комп'ютерні технології": "Гончаров О.М.", "Іноземна мова": "Токарєва О.В.", "Фізика і астрономія": "Карпова Л.М.", "Технології (М2 'Креслення')": "Васильченко І.І.", "Основи теорії кіл": "Чорний О.А.", "Фізична культура": "Філіппов Д.В.", "Інформатика": "Житченко І.М.", "Технології (М1 'Основи')": "Андрєєв В.О.", "Українська література": "Прощенко І.М.", "Біологія і екологія": "Шайтанова О.М.", "Математика Алгебра": "Коваль І.А.", "Історія України": "Домніна Г.С.", "Українська мова": "Прощенко І.М." },
+    3: { "Бази даних": "Гончаров О.М.", "Веб-дизайн": "Невідомий В.В.", "Філософія": "Мудрий І.І." },
+    4: { "Охорона праці": "Безпечний Б.Б.", "Дипломне": "Гончаров О.М." }
+};
+
+const reasons = ["захворів","сім. обст.","без пов.прич.","інд.","хворіє","у лікаря","на конкурсі","техн. пробл."];
+const monthNames = ["Січня", "Лютого", "Березня", "Квітня", "Травня", "Червня", "Липня", "Серпня", "Вересня", "Жовтня", "Листопада", "Грудня"];
+
+let currentDept = null;
+let currentGroup = null;
+let currentCourse = 1;
+let currentTeachers = {};
+
+// === LOGIC ===
+
+function selectDept(dept, btn) {
+    currentDept = dept;
+    document.querySelectorAll('.dept-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    const select = document.getElementById('groupSelect');
+    select.innerHTML = '<option value="" disabled selected>— Оберіть групу —</option>';
     
-    <div id="menu-view">
-      <div class="menu-grid">
-        
-        <div class="menu-card" onclick="openSchedule()">
-          <div class="menu-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-              <line x1="16" y1="2" x2="16" y2="6"></line>
-              <line x1="8" y1="2" x2="8" y2="6"></line>
-              <line x1="3" y1="10" x2="21" y2="10"></line>
-            </svg>
-          </div>
-          <div class="menu-label">Розклад</div>
-        </div>
-
-        <div class="menu-card" onclick="openReports()">
-          <div class="menu-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-              <polyline points="14 2 14 8 20 8"></polyline>
-              <line x1="16" y1="13" x2="8" y2="13"></line>
-              <line x1="16" y1="17" x2="8" y2="17"></line>
-              <polyline points="10 9 9 9 8 9"></polyline>
-            </svg>
-          </div>
-          <div class="menu-label">Рапортички</div>
-        </div>
-
-      </div>
-    </div>
-
-    <div id="schedule-view">
-      <div class="controls">
-        <button class="ctrl-btn" onclick="showWeek(1)">Тиждень 1</button>
-        <button class="ctrl-btn" onclick="showWeek(2)">Тиждень 2</button>
-        <button class="ctrl-btn" onclick="autoWeek()">Авто</button>
-      </div>
-      <div id="schedule" class="schedule"></div>
-    </div>
-
-    <div id="iframe-view">
-      <iframe src="https://st-gr.tiiny.site" title="Рапортички"></iframe>
-    </div>
-
-  </div>
-
-  <script>
-    // --- LOADER ---
-    window.addEventListener('load', () => {
-      setTimeout(() => {
-        document.getElementById('loader').classList.add('hidden-loader');
-      }, 1800);
-      showDate();
-      autoWeek(); // Pre-load schedule
-    });
-
-    // --- NAVIGATION LOGIC ---
-    function openSchedule() {
-      document.getElementById('menu-view').style.display = 'none';
-      document.getElementById('schedule-view').style.display = 'block';
-      document.getElementById('iframe-view').style.display = 'none';
-      document.getElementById('back-btn').style.display = 'block';
-      
-      // Auto scroll to current day when opening
-      setTimeout(() => {
-        const activeDay = document.querySelector('.current-day');
-        if (activeDay) activeDay.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }, 100);
-    }
-
-    function openReports() {
-      document.getElementById('menu-view').style.display = 'none';
-      document.getElementById('schedule-view').style.display = 'none';
-      document.getElementById('iframe-view').style.display = 'block';
-      document.getElementById('back-btn').style.display = 'block';
-    }
-
-    function goHome() {
-      document.getElementById('menu-view').style.display = 'flex'; // Flex to center
-      document.getElementById('schedule-view').style.display = 'none';
-      document.getElementById('iframe-view').style.display = 'none';
-      document.getElementById('back-btn').style.display = 'none';
-    }
-
-    // --- SCHEDULE DATA & LOGIC ---
-    const times = ["9:00", "10:40", "12:30", "14:00"];
-
-    const subjects = {
-      "Основи алгоритмів": "212",
-      "Комп'ютерна логіка": "210",
-      "Іноземна мова": "419",
-      "Теорія кіл": "317",
-      "Фізична культура": "ск1",
-      "Вища математика": "426",
-      "Історія України": "207",
-      "Фізика і астрономія": "421",
-      "Математика": "424",
-      "Технології М3": "209",
-      "Українська література": "411",
-      "Виховна година": "411",
-      "Українська мова": "411"
-    };
-
-    const schedules = {
-      1: {
-        "Пн": ["Основи алгоритмів  - Грабовчак Т.В.", "Комп'ютерна логіка - Вороніна С.В.", "Іноземна мова - Токарєва О.В.", "Теорія кіл - Чорний О.А."],
-        "Вт": ["Фізична культура - Філіппов Д.В.", "Вища математика - Гончаров О.М.", "Історія України - Домніна Г.С."],
-        "Ср": ["Вища математика - Гончаров О.М.", "Історія України - Домніна Г.С.", "Фізика і астрономія - Карпова П.М."],
-        "Чт": ["Математика - Коваль І.А.", "Технології М3 - Олійник О.Ю.", "Українська література - Прощенко І.М.", "Виховна година - Прощенко І.М."],
-        "Пт": ["Українська мова - Прощенко І.М.", "Комп'ютерна логіка - Вороніна С.В.", "Фізика і астрономія - Карпова Л.М."]
-      },
-      2: {
-        "Пн": ["Основи алгоритмів  - Грабовчак Т.В.", "Комп'ютерна логіка - Вороніна С.В.", "Іноземна мова - Токарєва О.В.", "Теорія кіл - Чорний О.А."],
-        "Вт": ["Фізична культура - Філіппов Д.В.", "Вища математика - Гончаров О.М.", "Основи алгоритмів - Грабовчак Т.В."],
-        "Ср": ["Вища математика - Гончаров О.М.", "Історія України - Домніна Г.С.", "Теорія кіл - Чорний О.А."],
-        "Чт": ["Математика - Коваль І.А.", "Технології М3 - Олійник О.Ю.", "Українська література - Прощенко І.М.", "Виховна година - Прощенко І.М."],
-        "Пт": ["Українська мова - Прощенко І.М.", "Комп'ютерна логіка - Вороніна С.В.", "Фізика і астрономія - Карпова Л.М."]
-      }
-    };
-
-    function renderSchedule(week) {
-      const container = document.getElementById("schedule");
-      container.innerHTML = `<h2>Розклад • Тиждень ${week}</h2>`;
-
-      const dayMap = ["Нд", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"];
-      const currentDayName = dayMap[new Date().getDay()];
-
-      for (let day in schedules[week]) {
-        let lessons = schedules[week][day];
-        let fullDay = Array(4).fill("Вільна пара");
-        
-        lessons.forEach((subj, i) => {
-          if(i < 4) fullDay[i] = subj;
+    if (groupsDB[dept]) {
+        Object.keys(groupsDB[dept]).forEach(id => {
+            const opt = document.createElement('option');
+            opt.value = id; opt.innerText = groupsDB[dept][id].name;
+            select.appendChild(opt);
         });
+        document.getElementById('groupAnimWrapper').classList.add('open');
+        document.getElementById('btnAnimWrapper').classList.remove('visible');
+    }
+}
 
-        let dayClass = "day";
-        if (day === currentDayName) dayClass += " current-day";
+function checkGroup() {
+    const val = document.getElementById('groupSelect').value;
+    if(val) document.getElementById('btnAnimWrapper').classList.add('visible');
+}
 
+function calculateCourse(startYear) {
+    const today = new Date();
+    const academicYearStart = (today.getMonth() < 8) ? today.getFullYear() - 1 : today.getFullYear();
+    return Math.max(1, Math.min(4, (academicYearStart - startYear) + 1));
+}
+
+function enterApp() {
+    const groupKey = document.getElementById('groupSelect').value;
+    if(!groupKey) return;
+    
+    currentGroup = groupsDB[currentDept][groupKey];
+    currentCourse = calculateCourse(currentGroup.startYear);
+    currentTeachers = curriculumDB[currentCourse] || {};
+    
+    document.getElementById('loginScreen').classList.add('hidden');
+    document.getElementById('appScreen').classList.remove('hidden');
+    document.getElementById('headerTitle').innerText = currentGroup.name;
+    document.getElementById('headerSubtitle').innerText = `${currentCourse} курс • ${Object.keys(currentTeachers).length} предметів`;
+
+    // Init Date
+    const d = new Date();
+    document.getElementById('dayInput').value = d.getDate();
+    document.getElementById('monthInput').value = d.getMonth();
+    document.getElementById('yearInput').value = d.getFullYear();
+    
+    renderSchedule();
+    renderStudents();
+}
+
+function renderSchedule() {
+    const container = document.getElementById('scheduleContainer');
+    container.innerHTML = '';
+    for (let i = 0; i <= 4; i++) {
         container.innerHTML += `
-          <div class="${dayClass}">
-            <h3>${day}</h3>
-            <ul>${fullDay.map((subj, i) => {
-              let room = "";
-              for (let key in subjects) {
-                if (subj.includes(key)) {
-                  room = subjects[key];
-                  break;
-                }
-              }
-              if (subj === "Вільна пара") {
-                return `<li class="absent"><span>${times[i]}</span> &mdash; ВІЛЬНО</li>`;
-              } else {
-                return `<li><span class="time">${times[i]}</span> <span class="subject-text">${subj}</span> ${room ? `<span class="room">${room}</span>` : ""}</li>`;
-              }
-            }).join('')}</ul>
-          </div>`;
-      }
+            <div class="schedule-item">
+                <span class="item-label">${i} ПАРА</span>
+                <div style="display:flex; gap:10px;">
+                    <select id="subj_${i}" class="pixel-select" onchange="autoTeacher(${i})">
+                        <option value="">— Предмет —</option>
+                        ${Object.keys(currentTeachers).map(s => `<option value="${s}">${s}</option>`).join("")}
+                        <option value="custom">Інше...</option>
+                    </select>
+                    <input id="teach_${i}" class="pixel-input" placeholder="Викладач">
+                </div>
+            </div>`;
     }
+}
 
-    function autoWeek() {
-      const startDate = new Date(2025, 0, 13);
-      const today = new Date();
-      const dayOfWeek = today.getDay();
-      let diffTime = today - startDate;
-      if (dayOfWeek === 6 || dayOfWeek === 0) diffTime += 7 * 24 * 60 * 60 * 1000;
-      const diffWeeks = Math.floor(diffTime / (7 * 24 * 60 * 60 * 1000));
-      const week = (diffWeeks % 2 === 0) ? 1 : 2;
-      renderSchedule(week);
+function autoTeacher(i) {
+    const subjVal = document.getElementById(`subj_${i}`).value;
+    const teachEl = document.getElementById(`teach_${i}`);
+    if (currentTeachers[subjVal]) {
+        teachEl.value = currentTeachers[subjVal];
+        // Auto-check students logic
+        currentGroup.students.forEach((_, idx) => {
+            const checkbox = document.querySelector(`.p${idx}[value="${i}"]`);
+            if(checkbox) checkbox.checked = true;
+        });
+        showToast(`Пара ${i} активована для всіх студентів`);
+    } else if (subjVal !== "custom") {
+        teachEl.value = "";
     }
+}
 
-    function showWeek(week) { renderSchedule(week); }
+function renderStudents() {
+    const container = document.getElementById('studentsContainer');
+    container.innerHTML = '';
+    currentGroup.students.forEach((s, i) => {
+        container.innerHTML += `
+            <div class="student-item">
+                <span class="student-name">${s}</span>
+                <label class="switch">
+                    <input type="checkbox" id="chk_${i}" onchange="toggleDetails(${i})">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="student-details" id="det_${i}">
+                <div class="details-content">
+                    <select id="reason_${i}" class="pixel-select" style="margin-bottom:10px; height:44px;">
+                        ${reasons.map(r => `<option>${r}</option>`).join("")}
+                    </select>
+                    <div class="chips">
+                        ${[0,1,2,3,4].map(p => `
+                            <label class="chip-lbl">
+                                <input type="checkbox" class="p${i}" value="${p}" style="display:none">
+                                <div class="chip-div">${p}</div>
+                            </label>`).join('')}
+                    </div>
+                </div>
+            </div>`;
+    });
+}
 
-    function showDate() {
-      const now = new Date();
-      const options = { weekday: 'long', day: 'numeric', month: 'long' };
-      let dateStr = now.toLocaleDateString('uk-UA', options);
-      dateStr = dateStr.replace(',', ''); 
-      document.getElementById("date").textContent = dateStr;
+function toggleDetails(i) {
+    const el = document.getElementById(`det_${i}`);
+    const isChecked = document.getElementById(`chk_${i}`).checked;
+    el.style.height = isChecked ? (el.scrollHeight + "px") : "0px";
+}
+
+function toggleTheme() {
+    document.body.classList.toggle('light-mode');
+}
+
+function setSide(side) {
+    document.getElementById('sideVal').value = side;
+    document.getElementById('btnLeft').style.background = side==='left' ? 'var(--input-bg)' : 'transparent';
+    document.getElementById('btnLeft').style.color = side==='left' ? 'var(--primary)' : 'var(--text-muted)';
+    document.getElementById('btnRight').style.background = side==='right' ? 'var(--input-bg)' : 'transparent';
+    document.getElementById('btnRight').style.color = side==='right' ? 'var(--primary)' : 'var(--text-muted)';
+}
+
+function showToast(msg) {
+    const toast = document.getElementById('toast');
+    toast.innerText = msg;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+// EXCEL LOGIC
+function base64ToArrayBuffer(base64) {
+    const binaryString = window.atob(base64);
+    const len = binaryString.length;
+    const bytes = new Uint8Array(len);
+    for (let i = 0; i < len; i++) { bytes[i] = binaryString.charCodeAt(i); }
+    return bytes.buffer;
+}
+function styleCell(cell, bold, size=11, italic=false) {
+  cell.font = { name: "Times New Roman", size: size, bold: bold, italic: italic };
+  cell.alignment = { horizontal: "center", vertical: "middle" };
+}
+async function generateExcel() {
+  if (!templateBase64) { showToast("❌ Код шаблону відсутній!"); return; }
+  showToast("⏳ Генерація файлу...");
+  const side = document.getElementById("sideVal").value;
+  const cols = {
+      header:   side === 'left' ? "A2" : "K2",
+      subject:  side === 'left' ? "B"  : "L",
+      teacher:  side === 'left' ? "C"  : "M",
+      grades:   side === 'left' ? ["C","D","E","F","G"] : ["M","N","O","P","Q"], 
+      total:    side === 'left' ? "H"  : "R"
+  };
+  const wb = new ExcelJS.Workbook();
+  const buffer = base64ToArrayBuffer(templateBase64);
+  await wb.xlsx.load(buffer);
+  const ws = wb.getWorksheet(1);
+  const day = document.getElementById('dayInput').value;
+  const monthIdx = document.getElementById('monthInput').value;
+  const yearFull = document.getElementById('yearInput').value;
+  const groupNameOnly = currentGroup.name.replace(/\D/g,''); 
+  const monthStr = monthNames[monthIdx];
+  const yearPrefix = yearFull.toString().substring(0, 2); 
+  const yearSuffix = yearFull.toString().substring(2, 4);
+
+  const fontBase = { name: 'Times New Roman', size: 10 };
+  const fontUnder = { name: 'Times New Roman', size: 10, underline: true };
+  const fontBoldItalic = { name: 'Times New Roman', size: 10, bold: true, italic: true };
+  const fontBoldItalicUnder = { name: 'Times New Roman', size: 10, bold: true, italic: true, underline: true };
+
+  ws.getCell(cols.header).value = {
+    richText: [
+      { text: '"', font: fontBase }, { text: '  ' + day + '  ', font: fontUnder }, 
+      { text: '"   ', font: fontBase }, { text: '   ' + monthStr, font: fontUnder }, 
+      { text: ' ', font: fontBase }, { text: yearPrefix, font: fontBoldItalic },
+      { text: yearSuffix, font: fontBoldItalicUnder }, { text: ' р.  Гр. №', font: fontBase }, 
+      { text: '  ' + groupNameOnly + '  ', font: fontUnder }, { text: '.', font: fontBase }
+    ]
+  };
+
+  const rowMap = {0:4, 1:5, 2:6, 3:7, 4:8}; 
+  for (let i = 0; i <= 4; i++) {
+    const subjVal = document.getElementById(`subj_${i}`).value;
+    const teachVal = document.getElementById(`teach_${i}`).value;
+    if (subjVal || teachVal) {
+        ws.getCell(`${cols.subject}${rowMap[i]}`).value = subjVal;
+        ws.getCell(`${cols.teacher}${rowMap[i]}`).value = teachVal;
+        styleCell(ws.getCell(`${cols.subject}${rowMap[i]}`), false);
+        styleCell(ws.getCell(`${cols.teacher}${rowMap[i]}`), false);
     }
+  }
 
-    function toggleTheme() {
-      document.body.classList.toggle("light-mode");
-      const icon = document.getElementById("theme-icon");
-      const isLight = document.body.classList.contains("light-mode");
-      if (isLight) {
-         icon.innerHTML = '<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>';
-      } else {
-         icon.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
-      }
+  let row = 11; 
+  currentGroup.students.forEach((s, i) => {
+    if(document.getElementById(`chk_${i}`).checked){
+      const reason = document.getElementById(`reason_${i}`).value;
+      const nameCell = ws.getCell(`${cols.subject}${row}`);
+      nameCell.value = `${s} (${reason})`;
+      nameCell.font = { name: "Times New Roman", size: 11, italic: false };
+      nameCell.alignment = { horizontal: "center", vertical: "middle" };
+      let hours = 0;
+      document.querySelectorAll(`.p${i}:checked`).forEach(p => {
+        const colLetter = cols.grades[p.value];
+        if (colLetter) {
+            ws.getCell(`${colLetter}${row}`).value = "2";
+            styleCell(ws.getCell(`${colLetter}${row}`), true, 11, false);
+            hours += 2;
+        }
+      });
+      ws.getCell(`${cols.total}${row}`).value = hours;
+      styleCell(ws.getCell(`${cols.total}${row}`), true, 11, false);
+      row++;
     }
-  </script>
+  });
+
+  const buf = await wb.xlsx.writeBuffer();
+  const sideSuffix = side === 'left' ? '_Left' : '_Right';
+  saveAs(new Blob([buf]), `raport_${groupNameOnly}_${day}_${monthStr}${sideSuffix}.xlsx`);
+  showToast("✅ Файл завантажено!");
+}
+
+function sendToDept() {
+    if(!currentDept) { showToast("⚠️ Спочатку оберіть відділення!"); return; }
+    
+    const email = deptEmails[currentDept];
+    const subject = `Рапортичка: ${currentGroup.name}`;
+    const body = `Доброго дня!\n\nНадсилаю рапортичку групи ${currentGroup.name} за ${document.getElementById('dayInput').value}-е число.\n(Файл рапортички прикріплено до цього листа).`;
+    
+    window.location.href = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    showToast(`📧 Відкриваю пошту для ${currentDept}...`);
+}
+</script>
 </body>
 </html>
